@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#101522">
+<title>ZYNEX CLOUD 1.0</title>
+<style>
+:root{--glass:rgba(255,255,255,.13);--line:rgba(255,255,255,.2);--text:#f7f8ff;--muted:#b8bfd2}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:#0c1220}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.phone{height:100dvh;width:100%;position:relative;overflow:hidden;background:radial-gradient(circle at 20% 20%,#365b83 0,transparent 35%),radial-gradient(circle at 85% 75%,#704b8e 0,transparent 38%),linear-gradient(145deg,#101a2d,#17283a 55%,#251c38)}
+.wall{position:absolute;inset:0;background:linear-gradient(145deg,rgba(13,26,47,.25),rgba(10,12,30,.5));}
+.status{position:absolute;top:0;left:0;right:0;height:42px;padding:12px 22px 0;display:flex;justify-content:space-between;font-size:13px;font-weight:650;z-index:5}
+.status .icons{letter-spacing:2px}
+.home{position:absolute;inset:50px 18px 30px;display:flex;flex-direction:column;z-index:2}
+.clock{margin:34px 8px 4px;font-size:58px;font-weight:250;letter-spacing:-3px}
+.date{margin-left:12px;color:#e0e7f6;font-size:15px}
+.search{margin:30px 2px 22px;padding:13px 16px;border:1px solid var(--line);border-radius:22px;background:var(--glass);backdrop-filter:blur(22px);display:flex;gap:10px;align-items:center;color:#e7ebf5}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 10px}
+.app{background:none;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:11px;text-shadow:0 1px 4px #0008}
+.icon{height:52px;width:52px;border-radius:17px;display:grid;place-items:center;font-size:25px;background:linear-gradient(145deg,rgba(255,255,255,.3),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.28);box-shadow:0 8px 22px #0003;backdrop-filter:blur(15px)}
+.dock{margin-top:auto;margin-bottom:12px;padding:13px 12px;border:1px solid var(--line);border-radius:26px;background:rgba(255,255,255,.16);backdrop-filter:blur(25px);display:grid;grid-template-columns:repeat(4,1fr)}
+.dock .icon{width:49px;height:49px}
+.nav{position:absolute;bottom:7px;left:calc(50% - 55px);width:110px;height:5px;border-radius:8px;background:#fff;opacity:.85;z-index:8}
+.panel{position:absolute;z-index:10;inset:0 0 auto;height:72%;padding:48px 20px 24px;background:rgba(17,25,42,.88);backdrop-filter:blur(32px);border:1px solid var(--line);border-radius:0 0 28px 28px;transform:translateY(-105%);transition:.28s}
+.panel.open{transform:translateY(0)}
+.panel h2{font-size:25px;margin:12px 0}
+.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:22px 0}
+.tile{padding:17px;border-radius:18px;background:rgba(255,255,255,.12);border:1px solid var(--line)}
+.tile strong{display:block;margin-top:8px}
+.appview{position:absolute;z-index:7;inset:0;background:linear-gradient(150deg,#10192b,#1e2940);transform:translateY(105%);transition:.25s;padding:55px 20px 35px;overflow:auto}
+.appview.open{transform:translateY(0)}
+.apphead{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.apphead h2{margin:0;font-size:24px}
+.back{padding:8px 13px;border-radius:15px;background:var(--glass);border:1px solid var(--line)}
+.card{padding:16px;margin:12px 0;border-radius:20px;background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px)}
+.row{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #ffffff18}
+.row:last-child{border:0}
+.muted{color:var(--muted);font-size:13px}
+input{width:100%;padding:13px;border-radius:14px;border:1px solid var(--line);background:#ffffff12;color:white}
+.primary{padding:12px 16px;border-radius:14px;background:#6b8df5;color:#fff;margin-top:12px}
+.toast{position:absolute;z-index:20;bottom:65px;left:50%;transform:translateX(-50%);padding:11px 16px;border-radius:20px;background:#101522e8;border:1px solid var(--line);font-size:13px;opacity:0;transition:.2s;white-space:nowrap}
+.toast.show{opacity:1}
+.small{font-size:12px;color:var(--muted);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+ <div class="wall"></div>
+ <div class="status" id="status" onclick="togglePanel()"><span id="statusTime">9:41</span><span class="icons">● ▮▮ ▰</span></div>
+ <main class="home">
+  <div class="clock" id="clock">09:41</div><div class="date" id="date">Wednesday, November 11</div>
+  <div class="search" onclick="openApp('Browser')">⌕ <span>Search apps & web</span></div>
+  <div class="grid">
+   <button class="app" onclick="openApp('Phone')"><span class="icon">📞</span>Phone</button>
+   <button class="app" onclick="openApp('Messages')"><span class="icon">💬</span>Messages</button>
+   <button class="app" onclick="openApp('Camera')"><span class="icon">📷</span>Camera</button>
+   <button class="app" onclick="openApp('Settings')"><span class="icon">⚙️</span>Settings</button>
+   <button class="app" onclick="openApp('Files')"><span class="icon">📁</span>Files</button>
+   <button class="app" onclick="openApp('Browser')"><span class="icon">🌐</span>Browser</button>
+   <button class="app" onclick="openApp('Play Store')"><span class="icon">▶️</span>Play Store</button>
+   <button class="app" onclick="openApp('About')"><span class="icon">🤖</span>About</button>
+  </div>
+  <div class="dock">
+   <button class="app" onclick="openApp('Phone')"><span class="icon">📞</span></button>
+   <button class="app" onclick="openApp('Browser')"><span class="icon">🌐</span></button>
+   <button class="app" onclick="openApp('Camera')"><span class="icon">📷</span></button>
+   <button class="app" onclick="openApp('Settings')"><span class="icon">⚙️</span></button>
+  </div>
+ </main>
+ <section class="panel" id="panel">
+  <div class="muted">ZYNEX CLOUD • QUICK SETTINGS</div><h2 id="panelClock">09:41</h2><div class="muted" id="panelDate"></div>
+  <div class="quick">
+   <div class="tile">◉ Wi-Fi <strong>On</strong></div><div class="tile">◐ Bluetooth<strong>On</strong></div>
+   <div class="tile">☾ Do Not Disturb<strong>Off</strong></div><div class="tile">✈ Airplane mode<strong>Off</strong></div>
+  </div>
+  <div class="card"><div class="row"><span>Brightness</span><span>☀</span></div><input type="range" min="20" max="100" value="85" oninput="document.getElementById('phone').style.filter='brightness('+this.value/85+')'"></div>
+  <button class="primary" onclick="togglePanel()">Close</button>
+ </section>
+ <section class="appview" id="appview">
+  <div class="apphead"><button class="back" onclick="closeApp()">‹ Home</button><h2 id="appTitle">Settings</h2><span>⋮</span></div>
+  <div id="appContent"></div>
+ </section>
+ <div class="toast" id="toast"></div>
+ <div class="nav" onclick="closeApp();togglePanel(false)"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+function updateClock(){let d=new Date();let t=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',hour12:false});$('clock').textContent=t;$('statusTime').textContent=t;$('panelClock').textContent=t;$('date').textContent=d.toLocaleDateString([], {weekday:'long',month:'long',day:'numeric'});$('panelDate').textContent=$('date').textContent}
+updateClock();setInterval(updateClock,15000);
+function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+function togglePanel(force){let p=$('panel');if(force===false)p.classList.remove('open');else p.classList.toggle('open')}
+function closeApp(){$('appview').classList.remove('open')}
+function openApp(name){
+ $('panel').classList.remove('open');$('appTitle').textContent=name;
+ let c='';
+ if(name==='Settings') c=`<div class="card"><div class="row"><span>Network & Internet</span><span>›</span></div><div class="row"><span>Connected devices</span><span>›</span></div><div class="row"><span>Display</span><span>›</span></div><div class="row"><span>Wallpaper & style</span><span>›</span></div><div class="row"><span>Security & privacy</span><span>›</span></div><div class="row"><span>System</span><span>›</span></div></div><div class="card"><b>Device information</b><p class="muted">ZYNEX CLOUD 1.0 • Android-style simulator</p></div>`;
+ else if(name==='About') c=`<div class="card"><h2>🤖 ZYNEX CLOUD</h2><p>Version 1.0</p><p class="muted">An Android-style interface simulator built for mobile browsers.</p></div><div class="card"><b>Important</b><p class="small">This is not Android OS and does not execute APK files or Android games.</p></div>`;
+ else if(name==='Files') c=`<div class="card"><h3>Internal storage</h3><div class="row">📁 Downloads <span>0 items</span></div><div class="row">📁 Pictures <span>0 items</span></div><div class="row">📁 Music <span>0 items</span></div><div class="row">📁 Documents <span>0 items</span></div></div>`;
+ else if(name==='Browser') c=`<div class="card"><h3>🌐 Browser</h3><p class="muted">Open a website in a new tab.</p><input id="weburl" placeholder="https://example.com"><button class="primary" onclick="let v=document.getElementById('weburl').value;if(v)window.open(v.startsWith('http')?v:'https://'+v,'_blank')">Open website</button></div>`;
+ else if(name==='Play Store') c=`<div class="card"><h3>▶️ App Store Preview</h3><p class="small">This demo does not include Google Play or install Android APKs.</p></div>`;
+ else c=`<div class="card"><h3>${name}</h3><p class="muted">This is a visual demo app. Some phone functions are simulated.</p><button class="primary" onclick="toast('${name} demo opened')">Test</button></div>`;
+ $('appContent').innerHTML=c;$('appview').classList.add('open');
+}
+let startY=0;
+document.addEventListener('touchstart',e=>{startY=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{let dy=e.changedTouches[0].clientY-startY;if(startY<35&&dy>70)togglePanel();if(startY>window.innerHeight-30&&dy< -70)closeApp()},{passive:true});
+</script>
+</body>
+</html>
